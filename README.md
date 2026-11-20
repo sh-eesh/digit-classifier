@@ -11,7 +11,7 @@ Create and activate the virtual environment. <br>
 `py -m venv .venv` <br>
 `.venv\Scripts\activate`
 
-Install dependencies <br>
+Install dependencies. <br>
 `pip install -r requirements.txt`
 
 ## Training
