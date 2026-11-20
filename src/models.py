@@ -6,7 +6,7 @@ import torch.nn as nn
 class DigitClassifier(nn.Module):
     def __init__(self):
         # Init parent pytorch module
-        super.__init__()
+        super().__init__()
 
         # Define our network
         self.network = nn.Sequential(
