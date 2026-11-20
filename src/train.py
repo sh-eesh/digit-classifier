@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+from os import mkdir
 
 from models import DigitClassifier
 
@@ -122,5 +123,6 @@ for epoch in range(epochs):
     )
 
 # Save the trained model's parameters
+mkdir("model")
 torch.save(model.state_dict(), "model/model.pth")
 print("Model saved successfully!")
