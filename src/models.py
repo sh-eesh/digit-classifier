@@ -1,5 +1,4 @@
 # Imports
-import torch
 import torch.nn as nn
 
 # Define digit classification nn
