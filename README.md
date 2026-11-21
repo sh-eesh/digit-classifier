@@ -17,7 +17,6 @@ Install dependencies. <br>
 ## Training
 Run the training script. <br>
 `python src/train.py` <br>
-The MNIST dataset is downloaded automatically and saved to the models folder.
 
 ## Run the Application
 After training is complete run. <br>
