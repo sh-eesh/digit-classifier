@@ -19,6 +19,6 @@ Run the training script. <br>
 `python src/train.py` <br>
 
 ## Run the Application
-After training is complete run. <br>
+The pretrained model is saved to the checkpoints folder you can just run the application and it will load that model or you can run the training script to train a new one and the run the application. To run the application. <br>
 `python src/app.py` <br>
 Draw a digit on the canvas and click on Predict to see the result.

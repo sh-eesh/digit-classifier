@@ -1,3 +1,4 @@
+
 import pygame
 import sys
 import torch
@@ -11,13 +12,14 @@ pygame.init()
 
 # Select device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Using device:", device)
 
 # Load trained model
 model = DigitClassifier().to(device)
 
 model.load_state_dict(
     torch.load(
-        "model/model.pth",
+        "checkpoints/model.pth",
         map_location=device,
         weights_only=True
     )
@@ -34,8 +36,8 @@ pygame.display.set_caption("Digit Classifier")
 
 # Colors
 BACKGROUND = (20, 22, 28)
-CANVAS_COLOR = (5, 5, 5)
-WHITE = (240, 240, 240)
+CANVAS_COLOR = (0, 0, 0)
+WHITE = (255, 255, 255)
 GRAY = (145, 150, 160)
 BUTTON_COLOR = (45, 49, 60)
 BUTTON_HOVER = (65, 70, 85)
@@ -67,12 +69,8 @@ predict_button = pygame.Rect(260, 455, 130, 45)
 prediction = None
 confidence = None
 
-# Image preprocessing
-transform = transforms.Compose([
-    transforms.Grayscale(),
-    transforms.Resize((28, 28)),
-    transforms.ToTensor()
-])
+# Image transformation
+transform = transforms.ToTensor()
 
 # Main clock
 clock = pygame.time.Clock()
@@ -82,7 +80,6 @@ clock = pygame.time.Clock()
 def draw_text(text, font, color, y):
     surface = font.render(text, True, color)
     rect = surface.get_rect(center=(WIDTH // 2, y))
-
     screen.blit(surface, rect)
 
 
@@ -94,6 +91,46 @@ def clear_canvas():
 
     prediction = None
     confidence = None
+
+
+# Preprocess image to match MNIST format
+def preprocess_image(image):
+
+    # Convert to grayscale
+    image = image.convert("L")
+
+    # Find digit boundaries
+    bbox = image.getbbox()
+
+    if bbox is None:
+        return None
+
+    # Crop around digit
+    image = image.crop(bbox)
+
+    # Preserve aspect ratio
+    width, height = image.size
+    size = max(width, height)
+
+    square = Image.new("L", (size, size), 0)
+
+    x = (size - width) // 2
+    y = (size - height) // 2
+
+    square.paste(image, (x, y))
+
+    # Resize digit to 20x20
+    image = square.resize(
+        (20, 20),
+        Image.Resampling.LANCZOS
+    )
+
+    # Center inside 28x28 image
+    final_image = Image.new("L", (28, 28), 0)
+    final_image.paste(image, (4, 4))
+
+    # Convert to tensor
+    return transform(final_image)
 
 
 # Predict the digit
@@ -109,8 +146,13 @@ def predict_digit():
         image_string
     )
 
-    # Apply image preprocessing
-    image = transform(image)
+    # Preprocess image
+    image = preprocess_image(image)
+
+    if image is None:
+        prediction = None
+        confidence = None
+        return
 
     # Add batch dimension and move to device
     image = image.unsqueeze(0).to(device)

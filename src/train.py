@@ -123,6 +123,6 @@ for epoch in range(epochs):
     )
 
 # Save the trained model's parameters
-mkdir("model")
-torch.save(model.state_dict(), "model/model.pth")
+mkdir("checkpoints")
+torch.save(model.state_dict(), "checkpoints/model.pth")
 print("Model saved successfully!")
